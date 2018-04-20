@@ -1,8 +1,10 @@
 # Sync Git Repositories (with LFS)
 
 Docker container to update local git repositories from their remotes.
-Calls `git fetch --all` on all repositories in `data` directory to 
+Calls `git fetch --all` on all repositories in `data` directory to
 download any changes from all remotes to the local volume.
+
+Does not completely handle `git-lfs` files yet.
 
 This container does not *synchronize* or *back up* anything, it merely fetches any updates. It does not *push* anything to the remotes, nor does it maintain snapshots of the data. If the remote is corrupt, then likely this will just fail.
 
@@ -13,6 +15,18 @@ for each repo in /data
 	fetch all from origin
 	clean, prune, etc.
 ```
+
+# *** BUG ***
+
+LFS repos cannot be *bare* repos at the moment [See this issue](https://github.com/git-lfs/git-lfs/issues/2342).
+
+Workaround: make a regular clone with the `.git` extension:
+```
+git clone git@github.com:stephenhouser/lfs-example.git lfs-example.git
+```
+
+This makes a local copy, but you cannot clone it properly, you get LFS fetch failures. The LFS stuff fails. It also makes a non-bare repository and the "checked out" branch is not updated, only the history is fetched. Not entirely sure this works properly.
+
 
 # Repository Setup
 
