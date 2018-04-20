@@ -21,7 +21,7 @@ You need to clone all your remote repositories into the `data` directory outside
 Example:
 ```
 cd ~/git-clones
-git clone --bare ssh://git@github.com:stephenhouser/git_fetch.git
+git clone --bare ssh://git@github.com:stephenhouser/docker_git_fetch.git
 ```
 
 If you need an *SSH key* to access your repositories, simply copy that key into a file named `private-key` in the `data` directory:
