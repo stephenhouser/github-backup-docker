@@ -20,5 +20,5 @@ COPY git-fetch-all.sh /
 
 VOLUME [ "/data" ]
 
-CMD ["/git-fetch-all.sh", "-vc", "/data"]
-#CMD ["/bin/sh"]
+#CMD ["/git-fetch-all.sh", "-vc", "/data"]
+CMD ["/git-fetch-all.sh", "/data"]

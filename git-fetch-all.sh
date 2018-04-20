@@ -31,6 +31,7 @@ for repo in $repos ; do
 
 	${verbose} && echo "Fetching remotes for $(pwd)"
 	git fetch --all --quiet
+	git lfs fetch --all > /dev/null
 
 	if ${check}; then
 		${verbose} && echo "Checking $(pwd)"
