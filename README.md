@@ -18,7 +18,7 @@ for each repo in /data
 
 # *** BUG ***
 
-LFS repos cannot be *bare* repos at the moment [See this issue](https://github.com/git-lfs/git-lfs/issues/2342).
+LFS repos cannot be *bare* local directory repos at the moment [See this issue](https://github.com/git-lfs/git-lfs/issues/2342). You need a server to mirror LFS.
 
 Workaround: make a regular clone with the `.git` extension:
 ```
@@ -26,6 +26,8 @@ git clone git@github.com:stephenhouser/lfs-example.git lfs-example.git
 ```
 
 This makes a local copy, but you cannot clone it properly, you get LFS fetch failures. The LFS stuff fails. It also makes a non-bare repository and the "checked out" branch is not updated, only the history is fetched. Not entirely sure this works properly.
+
+You need a server to [Mirror a repository that contains Git Large File Storage objects](https://help.github.com/enterprise/2.8/user/articles/duplicating-a-repository/#mirroring-a-repository-that-contains-git-large-file-storage-objects)
 
 
 # Repository Setup
