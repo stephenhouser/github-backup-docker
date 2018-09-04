@@ -1,0 +1,11 @@
+version: '2'
+services:
+  github-backup:
+    image: github-backup
+    build: .
+    container_name: github-backup
+    volumes:
+      - ./backup:/backup
+    env_file:
+      - ~/.ssh/container-secrets.txt
+

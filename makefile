@@ -1,45 +1,66 @@
 #
-# git-fetch - Fetch all remotes for git repositories
+# GitHub Backup - Backup GitHib repositories
 #
-VM_NAME=git_fetch
-DOCKER_IMAGE=stephenhouser/git_fetch
-DATA_VOLUME=$(shell pwd)/data
+# Based on github-backup from https://github.com/josegonzalez/python-github-backup
+#
+# Include my secrets from a protected place
+include ~/.ssh/container-secrets.txt
 
-#include ../makefile.vars
+# Basic container setup
+VM_NAME=$(shell /usr/bin/awk '/container_name: / {print $$2;}' docker-compose.yaml)
 
-ls:
-	-@docker ps -a | grep ${VM_NAME} || echo "No container named: ${VM_NAME}"
-	-@docker volume ls | grep ${DATA_VOLUME} || echo "No volume(s) named: ${DATA_VOLUME}"
+.PHONY: default backup test
 
-build:
-	docker build -t ${DOCKER_IMAGE}:latest .
+# Show the container and its volumes
+default:
+	docker-compose ps
 
-run: build
-	@echo "Creating container ${VM_NAME}..."
-	docker run --rm \
-		--name ${VM_NAME} \
-		-v ${DATA_VOLUME}:/data \
-		${DOCKER_IMAGE}
+# Back up the container's data by exporting and compressing it
+backup:
+	docker-compose run --rm github-backup
 
-start:
-	@echo "Starting container ${VM_NAME}..."
-	-@docker ps -a | grep ${VM_NAME} && docker start ${VM_NAME}
+## Make a new container by restoring an existing database
+#restore: distclean
+#	#docker-compose up --no-start
+#
+test:
+	docker-compose run --rm github-backup /bin/sh
 
+# Make (and start) the container
+run: backup
+
+container:
+	docker-compose build
+
+# # Start an already existing container that has been stopped
+# start:
+# 	docker-compose start
+
+# Attach to a running contiainer with sh
 attach:
-	-@docker ps -a | grep ${VM_NAME} && docker exec -it ${VM_NAME} /bin/sh
+	docker run --rm -it --name ${VM_NAME} ${VM_NAME} /bin/sh
+#	docker exec -it ${VM_NAME} /bin/sh
 
-console:
-	-@docker ps -a | grep ${VM_NAME} && docker attach ${VM_NAME}
+# # Attach to a running container's console
+# console:
+# 	screen -d -R -S ${VM_NAME} docker attach ${VM_NAME}
 
-stop:
-	@echo "Stopping container ${VM_NAME}..."
-	-@docker ps -a | grep ${VM_NAME} && docker stop ${VM_NAME}
+# # Stop a running container
+# stop:
+# 	docker-compose stop
 
+# Update a container's image; stop, pull new image, and restart
+update: clean
+	-docker-compose pull ${DOCKER_IMAGE}
+	make container 
+
+# Delete container's volume (DANGER)
+clean-volume:
+	docker-compose down -v
+
+# Delete a container (WARNNING)
 clean: stop
-	@echo "Removing container ${VM_NAME}..."
-	-@docker ps -a | grep ${VM_NAME} && docker rm ${VM_NAME}
+	docker-compose down
 
+# Delete a container and it's volumes (DANGER)
 distclean: clean clean-volume
-	@echo "Cleaning up volumes and images..."
-	-@docker volume prune -f
-	-@docker image prune -f
