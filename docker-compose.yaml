@@ -8,4 +8,3 @@ services:
       - ./backup:/backup
     env_file:
       - ~/.ssh/container-secrets.txt
-

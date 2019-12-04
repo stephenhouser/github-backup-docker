@@ -21,3 +21,6 @@ VOLUME /backup
 
 WORKDIR /backup
 CMD ["/entrypoint.sh"]
+# At 2am every day
+#RUN echo '* 2 * * * /entrypoint.sh' > /etc/crontabs/root
+#CMD crond -l 2 -f
